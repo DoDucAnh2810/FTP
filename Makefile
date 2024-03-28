@@ -7,7 +7,7 @@
 #.PRECIOUS: %.o
 
 CC = gcc
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Werror -g
 LDFLAGS =
 
 # Note: -lnsl does not seem to work on Mac OS but will
@@ -23,6 +23,7 @@ PROGS = ftpclient ftpserver
 
 
 all: $(PROGS)
+	rm client/*;\
 	mv ftpclient client;\
 	mv ftpserver server
 
@@ -34,6 +35,4 @@ all: $(PROGS)
 #	$(CC) -o $@ $(LDFLAGS) $(LIBS) $^
 	
 clean:
-	rm -f *.o;\
-	rm client/ftpclient;\
-	rm server/ftpserver
+	rm -f *.o

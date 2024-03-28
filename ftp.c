@@ -5,18 +5,18 @@
 #include "csapp.h"
 #include "string.h"
 
-void send_message(int fd, char *message) {
-    Rio_writen(fd, message, strlen(message));
+void send_message(int connfd, char *message) {
+    Rio_writen(connfd, message, strlen(message));
 }
 
-void ftp(int conn_fd, char *target_path)
-{
-    size_t n;
-    int target_fd;
-    char buffer[MAXLINE];
+void ftp(int conn_fd, char *target_path) {
     struct stat file_stat;
-    rio_t conn_rio, target_rio;
+    char buffer[MAXLINE];
+    rio_t target_rio;
+    int target_fd;
+    size_t n;
     
+    // Open target file and send diagnosis
     target_fd = open(target_path, O_RDONLY, 0);
     if (target_fd == -1) {
         switch (errno) {
@@ -38,16 +38,20 @@ void ftp(int conn_fd, char *target_path)
         }
         return;
     }
-
-    stat(buffer, &file_stat);
-    sprintf(buffer, "%lld\n", (long long)file_stat.st_size);
     send_message(conn_fd, "Success\n");
-    send_message(conn_fd, buffer);
-    Rio_readinitb(&target_rio, target_fd);
 
+    // Send target file's size
+    stat(target_path, &file_stat);
+    sprintf(buffer, "%lld\n", (long long)file_stat.st_size);
+    send_message(conn_fd, buffer);
+
+    // Send target file
+    Rio_readinitb(&target_rio, target_fd);
     while ((n = Rio_readnb(&target_rio, buffer, MAXLINE)) != 0)
         Rio_writen(conn_fd, buffer, n);
 
+    // Terminating protocol
+    send_message(conn_fd, "End\n");
     Close(target_fd);
 }
 

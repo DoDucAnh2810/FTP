@@ -5,9 +5,12 @@
 #include "csapp.h"
 
 #define MAX_NAME_LEN 256
-#define NB_PROC 2
+#define NB_PROC 1
 #define PORT 2121
 
+static int nb_server_reaped = 0;
+
+void send_message(int fd, char *message);
 void ftp(int connfd, char *dest_path);
 
 void sigchld_handler() {
@@ -15,15 +18,17 @@ void sigchld_handler() {
     int status;
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
         if (WIFEXITED(status))
-            fprintf(stderr,"Connection under pid %ld terminated normally with exit status %d\n", 
+            printf("Server under pid %ld terminated normally with exit status %d\n", 
                     (long)pid, WEXITSTATUS(status));
         else
-            fprintf(stderr, "Connection under pid %ld terminated abnormally\n", (long)pid);
+            printf("Server under pid %ld terminated abnormally\n", (long)pid);
+        nb_server_reaped++;
     }
 }
 
 void sigint_handler() {
     Kill(-getpid(), SIGKILL);
+    while (nb_server_reaped < NB_PROC - 1);
     exit(1);
 }
 
@@ -55,6 +60,7 @@ int main(int argc, char **argv)
             break;
 
     while (1) {
+        // Round robin to get the connection
         while ((connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen)) < 0);
 
         /* determine the name of the client */
@@ -68,14 +74,14 @@ int main(int argc, char **argv)
         printf("server connected to %s (%s)\n", client_hostname,
             client_ip_string);
 
-        
+        // Loop through requests sent by client
         Rio_readinitb(&conn_rio, connfd);
         while ((n = Rio_readlineb(&conn_rio, buffer, MAXLINE)) != 0) {
             if (n <= 1) {
                 send_message(connfd, "Empty request\n");
                 continue;
             }
-            buffer[n-1] = '\0';
+            buffer[n-1] = '\0'; // get rid of \n at the end
             ftp(connfd, buffer);
         }
 

@@ -1,8 +1,11 @@
 /*
- * echoclient.c - An echo client
+ * ftpclient.c - A FTP client
  */
+
+#include <string.h>
+#include <assert.h>
+#include <time.h>
 #include "csapp.h"
-#include "string.h"
 
 #define PORT 2121
 
@@ -54,10 +57,12 @@ int generate_dest_fd(char *dest_path) {
 
 int main(int argc, char **argv)
 {
-    int n;
     char *host, dest_path[MAXLINE], buffer[MAXLINE];
-    long long nb_total, nb_received;
+    long long nb_total, nb_received, nb_remaining;
+    clock_t start_transfer, end_transfer;
     rio_t client_rio, dest_rio;
+    double transfer_time;
+    int n;
 
     if (argc != 2) {
         fprintf(stderr, "usage: %s <host>\n", argv[0]);
@@ -79,30 +84,53 @@ int main(int argc, char **argv)
      */
     printf("client connected to server OS\n"); 
     
+    
     Rio_readinitb(&client_rio, client_fd);
-
     while (Fgets(buffer, MAXLINE, stdin) != NULL) {
+        // Send the file path
         Rio_writen(client_fd, buffer, strlen(buffer));
         strcpy(dest_path, buffer);
 
+        // Receive error code
         receive_line(&client_rio, buffer, MAXLINE);
         Fputs(buffer, stdout);
-
         if (strcmp(buffer, "Success\n") != 0)
             continue;
         
+        // Generate output destination
         dest_fd = generate_dest_fd(dest_path);
         Rio_readinitb(&dest_rio, dest_fd);
 
+        // Receive the size of the file
         receive_line(&client_rio, buffer, MAXLINE);
         nb_total = atoll(buffer);
-        nb_received = 0;
 
+        // Loop until received everything
+        start_transfer = clock();
+        nb_received = 0;
+        nb_remaining = nb_total;
         while (nb_received < nb_total) {
-            n = receive_nbytes(&client_rio, buffer, MAXLINE);
+            if (nb_remaining < MAXLINE)
+                n = receive_nbytes(&client_rio, buffer, nb_remaining);
+            else
+                n = receive_nbytes(&client_rio, buffer, MAXLINE);
             nb_received += n;
+            nb_remaining -= n;
             Rio_writen(dest_fd, buffer, n);
         }
+        end_transfer = clock();
+    
+        // Receive ending and verify properties
+        receive_line(&client_rio, buffer, MAXLINE);
+        assert(strcmp(buffer, "End\n") == 0);
+        assert(nb_received == nb_total);
+        
+        // Print information on the transfer
+        transfer_time = (double)(end_transfer - start_transfer) / CLOCKS_PER_SEC;
+        printf("Transfer successfully complete.\n");
+        printf("%lld bytes received in %f seconds (%f bytes/s).\n", 
+                nb_received, transfer_time, transfer_time / nb_received);
     }
+
     end_session(client_fd);
 }
