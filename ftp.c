@@ -1,13 +1,11 @@
 /*
- * echo - read and echo text lines until client closes connection
+ * ftp.c - Transfer a file to a connection
  */
-#include <sys/stat.h>
-#include "csapp.h"
-#include "string.h"
 
-void send_message(int connfd, char *message) {
-    Rio_writen(connfd, message, strlen(message));
-}
+#include <sys/stat.h>
+#include <string.h>
+#include "csapp.h"
+#include "utils.h"
 
 void ftp(int conn_fd, char *target_path) {
     struct stat file_stat;

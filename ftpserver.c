@@ -1,33 +1,22 @@
 /*
- * echoserveri.c - An iterative echo server
+ * ftpserver.c - A pooled FTP server
  */
 
 #include "csapp.h"
-
-#define MAX_NAME_LEN 256
-#define NB_PROC 1
-#define PORT 2121
+#include "utils.h"
+#include "ftp.h"
 
 static int nb_server_reaped = 0;
-
-void send_message(int fd, char *message);
-void ftp(int connfd, char *dest_path);
 
 void sigchld_handler() {
     pid_t pid;
     int status;
-    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        if (WIFEXITED(status))
-            printf("Server under pid %ld terminated normally with exit status %d\n", 
-                    (long)pid, WEXITSTATUS(status));
-        else
-            printf("Server under pid %ld terminated abnormally\n", (long)pid);
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) 
         nb_server_reaped++;
-    }
 }
 
 void sigint_handler() {
-    Kill(-getpid(), SIGKILL);
+    kill(-getpid(), SIGINT);
     while (nb_server_reaped < NB_PROC - 1);
     exit(1);
 }
@@ -36,8 +25,7 @@ void sigint_handler() {
  * Note that this code only works with IPv4 addresses
  * (IPv6 is not supported)
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     Signal(SIGCHLD, sigchld_handler);
     Signal(SIGINT, sigint_handler);
     
@@ -53,7 +41,7 @@ int main(int argc, char **argv)
     
     clientlen = (socklen_t)sizeof(clientaddr);
 
-    listenfd = Open_listenfd(PORT);
+    listenfd = Open_listenfd(SERVER_PORT);
 
     for (i = 1; i < NB_PROC; i++)
         if (!(pid = Fork()))
@@ -71,7 +59,7 @@ int main(int argc, char **argv)
         Inet_ntop(AF_INET, &clientaddr.sin_addr, client_ip_string,
                 INET_ADDRSTRLEN);
         
-        printf("server connected to %s (%s)\n", client_hostname,
+        printf("Server connected to %s (%s)\n", client_hostname,
             client_ip_string);
 
         // Loop through requests sent by client
@@ -82,7 +70,14 @@ int main(int argc, char **argv)
                 continue;
             }
             buffer[n-1] = '\0'; // get rid of \n at the end
+
+            printf("Received request for %s from %s (%s)\n", 
+                    buffer, client_hostname, client_ip_string);
+                    
             ftp(connfd, buffer);
+
+            printf("Successfully completed request for %s from %s (%s)\n", 
+                                buffer, client_hostname, client_ip_string);
         }
 
         Close(connfd);    

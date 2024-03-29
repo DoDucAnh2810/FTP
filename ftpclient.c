@@ -6,44 +6,21 @@
 #include <assert.h>
 #include <time.h>
 #include "csapp.h"
+#include "utils.h"
 
-#define PORT 2121
-
-static int client_fd = -1;
-static int dest_fd = -1;
-
-void end_session() {
-    if (client_fd != -1)
-        Close(client_fd);
-    if (dest_fd != -1)
-        Close(dest_fd);
-    exit(0);
-}
-
-int receive_line(rio_t *client_rp, char *buffer, size_t maxlen) {
-    int n = Rio_readlineb(client_rp, buffer, maxlen); 
-    if (n <= 0)
-        end_session();
-    return n;   
-}
-
-int receive_nbytes(rio_t *client_rp, char *buffer, size_t maxlen) {
-    int n = Rio_readnb(client_rp, buffer, maxlen); 
-    if (n <= 0)
-        end_session();
-    return n;   
-}
-
+/* Generate a good file descriptor for writing to dest_path*/
 int generate_dest_fd(char *dest_path) {
     int i, suffix_index, dest_fd;
     char suffix_string[8];
 
+    // Find the end of the string
     i = 0;
     while (dest_path[i] != '\n')
         i++;
     dest_path[i] = '\0';
 
-    suffix_index = 0;
+    // Loop until a valid path
+    suffix_index = 1;
     dest_fd = open(dest_path, O_WRONLY | O_CREAT, 0644);
     while (dest_fd == -1) {
         sprintf(suffix_string, "-%d", suffix_index);
@@ -55,12 +32,18 @@ int generate_dest_fd(char *dest_path) {
     return dest_fd;
 }
 
-int main(int argc, char **argv)
-{
+/* Get command line of user from stdin */
+char *get_command(char *buffer) {
+    printf("ftp> ");
+    return Fgets(buffer, MAXLINE, stdin);
+}
+
+int main(int argc, char **argv) {
     char *host, dest_path[MAXLINE], buffer[MAXLINE];
     long long nb_total, nb_received, nb_remaining;
     clock_t start_transfer, end_transfer;
     rio_t client_rio, dest_rio;
+    int client_fd, dest_fd;
     double transfer_time;
     int n;
 
@@ -75,26 +58,26 @@ int main(int argc, char **argv)
      * If necessary, Open_clientfd will perform the name resolution
      * to obtain the IP address.
      */
-    client_fd = Open_clientfd(host, PORT);
+    client_fd = Open_clientfd(host, SERVER_PORT);
     
     /*
      * At this stage, the connection is established between the client
      * and the server OS ... but it is possible that the server application
      * has not yet called "Accept" for this connection
      */
-    printf("client connected to server OS\n"); 
+    printf("Connected to FTP server\n"); 
     
     
     Rio_readinitb(&client_rio, client_fd);
-    while (Fgets(buffer, MAXLINE, stdin) != NULL) {
+    while (get_command(buffer) != NULL) {
         // Send the file path
-        Rio_writen(client_fd, buffer, strlen(buffer));
+        send_message(client_fd, buffer);
         strcpy(dest_path, buffer);
 
         // Receive error code
-        receive_line(&client_rio, buffer, MAXLINE);
+        Rio_readlineb(&client_rio, buffer, MAXLINE);
         Fputs(buffer, stdout);
-        if (strcmp(buffer, "Success\n") != 0)
+        if (!are_equal_strings(buffer, "Success\n"))
             continue;
         
         // Generate output destination
@@ -102,7 +85,7 @@ int main(int argc, char **argv)
         Rio_readinitb(&dest_rio, dest_fd);
 
         // Receive the size of the file
-        receive_line(&client_rio, buffer, MAXLINE);
+        Rio_readlineb(&client_rio, buffer, MAXLINE);
         nb_total = atoll(buffer);
 
         // Loop until received everything
@@ -111,9 +94,9 @@ int main(int argc, char **argv)
         nb_remaining = nb_total;
         while (nb_received < nb_total) {
             if (nb_remaining < MAXLINE)
-                n = receive_nbytes(&client_rio, buffer, nb_remaining);
+                n = Rio_readnb(&client_rio, buffer, nb_remaining);
             else
-                n = receive_nbytes(&client_rio, buffer, MAXLINE);
+                n = Rio_readnb(&client_rio, buffer, MAXLINE);
             nb_received += n;
             nb_remaining -= n;
             Rio_writen(dest_fd, buffer, n);
@@ -121,16 +104,18 @@ int main(int argc, char **argv)
         end_transfer = clock();
     
         // Receive ending and verify properties
-        receive_line(&client_rio, buffer, MAXLINE);
-        assert(strcmp(buffer, "End\n") == 0);
+        Rio_readlineb(&client_rio, buffer, MAXLINE);
+        assert(are_equal_strings(buffer, "End\n"));
         assert(nb_received == nb_total);
         
         // Print information on the transfer
         transfer_time = (double)(end_transfer - start_transfer) / CLOCKS_PER_SEC;
         printf("Transfer successfully complete.\n");
-        printf("%lld bytes received in %f seconds (%f bytes/s).\n", 
-                nb_received, transfer_time, transfer_time / nb_received);
+        printf("%lld bytes received in %lf seconds (%.2f KBs/s).\n", 
+                nb_received, transfer_time, (nb_received / transfer_time) / 1000);
     }
 
-    end_session(client_fd);
+    Close(client_fd);
+    Close(dest_fd);
+    exit(0);
 }

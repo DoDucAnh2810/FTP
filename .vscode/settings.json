@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "stat.h": "c"
+        "stat.h": "c",
+        "system_error": "c",
+        "string.h": "c",
+        "utils.h": "c"
     }
 }
