@@ -21,6 +21,11 @@ void sigint_handler() {
     exit(1);
 }
 
+void sigpipe_handler() {
+    printf("Detected that a client has crashed\n");
+    fflush(stdout);
+}
+
 /* 
  * Note that this code only works with IPv4 addresses
  * (IPv6 is not supported)
@@ -28,7 +33,7 @@ void sigint_handler() {
 int main(int argc, char **argv) {
     Signal(SIGCHLD, sigchld_handler);
     Signal(SIGINT, sigint_handler);
-    
+    Signal(SIGPIPE, sigpipe_handler);
     int listenfd, connfd, i;
     socklen_t clientlen;
     struct sockaddr_in clientaddr;
@@ -74,13 +79,16 @@ int main(int argc, char **argv) {
             printf("Received request for %s from %s (%s)\n", 
                     buffer, client_hostname, client_ip_string);
                     
-            ftp(connfd, buffer);
-
-            printf("Successfully completed request for %s from %s (%s)\n", 
-                                buffer, client_hostname, client_ip_string);
+            if (ftp(connfd, buffer))
+                printf("Failed request for %s from %s (%s)\n", 
+                    buffer, client_hostname, client_ip_string);
+            else
+                printf("Successfull for %s from %s (%s)\n", 
+                    buffer, client_hostname, client_ip_string);
         }
 
-        Close(connfd);    
+        Close(connfd);
+        printf("Closed connection to %s (%s)\n", client_hostname, client_ip_string);  
     }
 
     exit(0);

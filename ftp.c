@@ -7,7 +7,7 @@
 #include "csapp.h"
 #include "utils.h"
 
-void ftp(int conn_fd, char *target_path) {
+int ftp(int conn_fd, char *target_path) {
     struct stat file_stat;
     char buffer[MAXLINE];
     rio_t target_rio;
@@ -34,7 +34,7 @@ void ftp(int conn_fd, char *target_path) {
             send_message(conn_fd, "Unknown error\n");
             break;
         }
-        return;
+        return 1;
     }
     send_message(conn_fd, "Success\n");
 
@@ -46,10 +46,14 @@ void ftp(int conn_fd, char *target_path) {
     // Send target file
     Rio_readinitb(&target_rio, target_fd);
     while ((n = Rio_readnb(&target_rio, buffer, MAXLINE)) != 0)
-        Rio_writen(conn_fd, buffer, n);
+        if (rio_writen(conn_fd, buffer, n) == -1) {
+            Close(target_fd);
+            return 1;
+        }
 
     // Terminating protocol
-    send_message(conn_fd, "End\n");
     Close(target_fd);
+    send_message(conn_fd, "End\n");
+    return 0;
 }
 
