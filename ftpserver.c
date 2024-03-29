@@ -22,7 +22,7 @@ void sigint_handler() {
 }
 
 void sigpipe_handler() {
-    printf("Detected that a client has crashed\n");
+    printf("\x1b[31mDetected that a client has crashed\n\x1b[0m");
     fflush(stdout);
 }
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
         Inet_ntop(AF_INET, &clientaddr.sin_addr, client_ip_string,
                 INET_ADDRSTRLEN);
         
-        printf("Server connected to %s (%s)\n", client_hostname,
+        printf("\x1b[34mServer connected to %s (%s)\n\x1b[0m", client_hostname,
             client_ip_string);
 
         // Loop through requests sent by client
@@ -76,19 +76,19 @@ int main(int argc, char **argv) {
             }
             buffer[n-1] = '\0'; // get rid of \n at the end
 
-            printf("Received request for %s from %s (%s)\n", 
+            printf("Received request for \x1b[1;33m%s\x1b[0m from %s (%s)\n", 
                     buffer, client_hostname, client_ip_string);
                     
             if (ftp(connfd, buffer))
-                printf("Failed request for %s from %s (%s)\n", 
-                    buffer, client_hostname, client_ip_string);
+                printf("\x1b[31mFailed request for \x1b[1;33m%s\x1b[0m\x1b[31m from %s (%s)\n\x1b[0m", 
+                                                            buffer, client_hostname, client_ip_string);
             else
-                printf("Successfull for %s from %s (%s)\n", 
-                    buffer, client_hostname, client_ip_string);
+                printf("\x1b[32mSuccessful request for \x1b[1;33m%s\x1b[0m\x1b[32m from %s (%s)\n\x1b[0m", 
+                                        buffer, client_hostname, client_ip_string);
         }
 
         Close(connfd);
-        printf("Closed connection to %s (%s)\n", client_hostname, client_ip_string);  
+        printf("\x1b[34mClosed connection to %s (%s)\n\x1b[0m", client_hostname, client_ip_string);  
     }
 
     exit(0);

@@ -36,7 +36,7 @@ int ftp(int conn_fd, char *target_path) {
         }
         return 1;
     }
-    send_message(conn_fd, "Success\n");
+    send_message(conn_fd, "Successful request\n");
 
     // Send target file's size
     stat(target_path, &file_stat);

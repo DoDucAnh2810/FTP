@@ -34,7 +34,7 @@ int generate_dest_fd(char *dest_path) {
 
 /* Get command line of user from stdin */
 char *get_command(char *buffer) {
-    printf("ftp> ");
+    printf("\x1b[1;33mftp>\x1b[0m ");
     return Fgets(buffer, MAXLINE, stdin);
 }
 
@@ -76,10 +76,13 @@ int main(int argc, char **argv) {
 
         // Receive error code
         Rio_readlineb(&client_rio, buffer, MAXLINE);
-        Fputs(buffer, stdout);
-        if (!are_equal_strings(buffer, "Success\n"))
+        if (are_equal_strings(buffer, "Successful request\n"))
+            printf("\x1b[1;32m%s\x1b[0m", buffer);
+        else {
+            printf("\x1b[1;31m%s\x1b[0m", buffer);
             continue;
-        
+        }
+
         // Generate output destination
         dest_fd = generate_dest_fd(dest_path);
         Rio_readinitb(&dest_rio, dest_fd);
@@ -110,7 +113,7 @@ int main(int argc, char **argv) {
         
         // Print information on the transfer
         transfer_time = (double)(end_transfer - start_transfer) / CLOCKS_PER_SEC;
-        printf("Transfer successfully complete.\n");
+        printf("Transfer successfully completed.\n");
         printf("%lld bytes received in %lf seconds (%.2f KBs/s).\n", 
                 nb_received, transfer_time, (nb_received / transfer_time) / 1000);
     }
