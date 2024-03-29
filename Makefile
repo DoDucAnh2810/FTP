@@ -16,7 +16,7 @@ LDFLAGS =
 LIBS += -lpthread
 
 INCLUDE = csapp.h
-OBJS = csapp.o ftp.o utils.o
+OBJS = csapp.o ftp.o utils.o cJSON.o
 INCLDIR = -I.
 
 PROGS = ftpclient ftpserver
