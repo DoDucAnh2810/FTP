@@ -39,11 +39,11 @@ char *get_command(char *buffer) {
 }
 
 int main(int argc, char **argv) {
-    char *host, dest_path[MAXLINE], buffer[MAXLINE];
+    char *master_host, cluster_name[256], cluster_host[256], dest_path[MAXLINE], buffer[MAXLINE];
     long long nb_total, nb_received, nb_remaining;
     clock_t start_transfer, end_transfer;
     rio_t client_rio, dest_rio;
-    int client_fd, dest_fd;
+    int client_fd, dest_fd, cluster_port;
     double transfer_time;
     int n;
 
@@ -51,22 +51,30 @@ int main(int argc, char **argv) {
         fprintf(stderr, "usage: %s <host>\n", argv[0]);
         exit(0);
     }
-    host = argv[1];
+    master_host = argv[1];
 
     /*
      * Note that the 'host' can be a name or an IP address.
      * If necessary, Open_clientfd will perform the name resolution
      * to obtain the IP address.
      */
-    client_fd = Open_clientfd(host, SERVER_PORT);
+    client_fd = Open_clientfd(master_host, MASTER_PORT);
     
     /*
      * At this stage, the connection is established between the client
      * and the server OS ... but it is possible that the server application
      * has not yet called "Accept" for this connection
      */
-    printf("Connected to FTP server\n"); 
-    
+    printf("Connected to FTP Master Server\n");
+
+    Rio_readinitb(&client_rio, client_fd);
+    Rio_readlineb(&client_rio, buffer, MAXLINE);
+    Close(client_fd);
+    sscanf(buffer, "%s %s %d\n", cluster_name, cluster_host, &cluster_port);
+
+    client_fd = Open_clientfd(cluster_host, cluster_port);
+
+    printf("Redirected to Cluster %s\n", cluster_name);
     
     Rio_readinitb(&client_rio, client_fd);
     while (get_command(buffer) != NULL) {
@@ -77,9 +85,12 @@ int main(int argc, char **argv) {
         // Receive error code
         Rio_readlineb(&client_rio, buffer, MAXLINE);
         if (are_equal_strings(buffer, "Successful request\n"))
-            printf("\x1b[1;32m%s\x1b[0m", buffer);
-        else {
-            printf("\x1b[1;31m%s\x1b[0m", buffer);
+            printf("\x1b[32m%s\x1b[0m", buffer);
+        else if (are_equal_strings(buffer, "Goodbye!\n")) {
+            printf("\x1b[34m%s\x1b[0m", buffer);
+            break;                
+        } else {
+            printf("\x1b[31m%s\x1b[0m", buffer);
             continue;
         }
 

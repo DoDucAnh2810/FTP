@@ -16,16 +16,14 @@ LDFLAGS =
 LIBS += -lpthread
 
 INCLUDE = csapp.h
-OBJS = csapp.o ftp.o utils.o cJSON.o
+OBJS = csapp.o utils.o cJSON.o
 INCLDIR = -I.
 
-PROGS = ftpclient ftpserver
+PROGS = ftpclient ftpserver ftpmaster
 
 
 all: $(PROGS)
-	rm client/*;\
-	mv ftpclient client;\
-	mv ftpserver server
+	scripts/init.sh
 
 %.o: %.c $(INCLUDE)
 	$(CC) $(CFLAGS) $(INCLDIR) -c -o $@ $<
@@ -35,6 +33,15 @@ all: $(PROGS)
 #	$(CC) -o $@ $(LDFLAGS) $(LIBS) $^
 	
 clean:
-	rm -f *.o;\
-	rm client/ftpclient;\
-	rm server/ftpserver;
+	scripts/delete_cache.sh
+
+start_server:
+	scripts/launch_server.sh
+
+end_server:
+	scripts/terminate_server.sh
+
+client:
+	scripts/open_client.sh
+
+

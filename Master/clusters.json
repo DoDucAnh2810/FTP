@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Nord",
+        "host": "localhost",
+        "port": 2122
+    },
+    {
+        "name": "East",
+        "host": "localhost",
+        "port": 2123
+    },
+    {
+        "name": "West",
+        "host": "localhost",
+        "port": 2124
+    },
+    {
+        "name": "South",
+        "host": "localhost",
+        "port": 2125
+    }
+]
