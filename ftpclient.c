@@ -8,7 +8,7 @@
 #include "csapp.h"
 #include "utils.h"
 
-/* Generate a good file descriptor for writing to dest_path*/
+/* Generate a good file descriptor for writing to dest_path */
 int generate_dest_fd(char *dest_path) {
     int i, suffix_index, dest_fd;
     char suffix_string[8];

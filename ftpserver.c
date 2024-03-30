@@ -76,15 +76,15 @@ int main(int argc, char **argv) {
             }
             buffer[n-1] = '\0'; // get rid of \n at the end
 
-            printf("Received request for \x1b[1;33m%s\x1b[0m from %s (%s)\n", 
-                    buffer, client_hostname, client_ip_string);
+            printf("Received request for \x1b[1;33m%s\x1b[0m from %s (%s)\n",
+                                    buffer, client_hostname, client_ip_string);
                     
             if (ftp(connfd, buffer))
-                printf("\x1b[31mFailed request for \x1b[1;33m%s\x1b[0m\x1b[31m from %s (%s)\n\x1b[0m", 
+                printf("\x1b[31mFailed request for \x1b[1;33m%s\x1b[0m\x1b[31m from %s (%s)\n\x1b[0m",
                                                             buffer, client_hostname, client_ip_string);
             else
-                printf("\x1b[32mSuccessful request for \x1b[1;33m%s\x1b[0m\x1b[32m from %s (%s)\n\x1b[0m", 
-                                        buffer, client_hostname, client_ip_string);
+                printf("\x1b[32mSuccessful request for \x1b[1;33m%s\x1b[0m\x1b[32m from %s (%s)\n\x1b[0m",
+                                                                buffer, client_hostname, client_ip_string);
         }
 
         Close(connfd);

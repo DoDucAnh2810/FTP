@@ -35,4 +35,6 @@ all: $(PROGS)
 #	$(CC) -o $@ $(LDFLAGS) $(LIBS) $^
 	
 clean:
-	rm -f *.o
+	rm -f *.o;\
+	rm client/ftpclient;\
+	rm server/ftpserver;
