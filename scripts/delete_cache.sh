@@ -1,7 +1,8 @@
 #!/bin/bash
 
+find Clusters -mindepth 2 ! -name ".port" -delete
+rm -f Clusters/ftpserver
+rm -f Master/ftpmaster 
+rm -f Master/log.txt
+rm -f Clients/*
 rm -f *.o
-rm -f Master/ftpmaster
-find Clients -type f -delete
-find . -name "log.txt" -exec rm -f {} +
-find Clusters -type f -name "ftpserver" -delete

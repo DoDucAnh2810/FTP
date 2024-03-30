@@ -23,6 +23,7 @@ for dir in */
 do
     if [[ -d "$dir" ]]
     then
+        cp -r ../Files/* $dir
         cp ftpserver "$dir"
     fi 
 done

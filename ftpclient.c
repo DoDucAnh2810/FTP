@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
      * and the server OS ... but it is possible that the server application
      * has not yet called "Accept" for this connection
      */
-    printf("Connected to FTP Master Server\n");
+    printf("\x1b[34mConnected to FTP Master Server\n\x1b[0m");
 
     Rio_readinitb(&client_rio, client_fd);
     Rio_readlineb(&client_rio, buffer, MAXLINE);
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
     client_fd = Open_clientfd(cluster_host, cluster_port);
 
-    printf("Redirected to Cluster %s\n", cluster_name);
+    printf("\x1b[34mRedirected to Cluster %s\n\x1b[0m", cluster_name);
     
     Rio_readinitb(&client_rio, client_fd);
     while (get_command(buffer) != NULL) {
