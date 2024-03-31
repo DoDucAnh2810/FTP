@@ -6,7 +6,7 @@ static int next_cluster_index = 0;
 
 int select_cluster_index(int nb_cluster) {
     int selected_cluster = next_cluster_index;
-    next_cluster_index = (next_cluster_index) % nb_cluster; // Passer au prochain serveur esclave
+    next_cluster_index = (next_cluster_index + 1) % nb_cluster; // Passer au prochain serveur esclave
     return selected_cluster;
 }
 

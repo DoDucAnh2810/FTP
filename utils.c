@@ -114,3 +114,35 @@ cluster_t *parse_cluster_list(char *filepath, int *nb_cluster) {
 
     return cluster_list;
 }
+
+
+// Function to strip a given prefix from a given string
+char *strip_prefix(const char *string, const char *prefix) {
+    size_t prefix_length = strlen(prefix);
+
+    // Check if the string starts with the prefix
+    if (strncmp(string, prefix, prefix_length) == 0) {
+        // Move the string pointer forward by the length of the prefix
+        return (char *)strdup(string + prefix_length);
+    } else {
+        // If the prefix is not found, return the original string
+        return (char *)strdup(string);
+    }
+}
+
+char* add_prefix(const char* prefix, const char* buffer) {
+    // Allocate memory for the new string
+    size_t prefix_len = strlen(prefix);
+    size_t buffer_len = strlen(buffer);
+    char* result = (char*)malloc(prefix_len + buffer_len + 1); // +1 for null terminator
+
+    if (result == NULL) {
+        fprintf(stderr, "Fatal: Memory allocation failed.\n");
+        exit(1);
+    }
+
+    // Copy the prefix and the buffer into the new string
+    sprintf(result, "%s%s", prefix, buffer);
+
+    return result;
+}

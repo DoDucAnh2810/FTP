@@ -1,4 +1,3 @@
 #!/bin/bash
 
-killall -INT ftpserver
-killall -KILL ftpmaster
+killall -KILL -g ftpserver

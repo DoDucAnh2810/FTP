@@ -30,4 +30,8 @@ void free_string_array(char** words, int num_words);
 
 cluster_t *parse_cluster_list(char *filepath, int *nb_cluster);
 
+char *strip_prefix(const char *string, const char *prefix);
+
+char* add_prefix(const char* prefix, const char* buffer);
+
 #endif
