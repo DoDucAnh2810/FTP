@@ -24,6 +24,7 @@ PROGS = ftpclient ftpserver ftpmaster
 
 all: $(PROGS)
 	scripts/init.sh
+	@echo "Initialization completed!"
 
 %.o: %.c $(INCLUDE)
 	$(CC) $(CFLAGS) $(INCLDIR) -c -o $@ $<
