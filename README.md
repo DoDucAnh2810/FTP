@@ -53,6 +53,7 @@ Successful command \
 + Permission denied
 + Unknown error
 + Is a directory
++ File must be in current working directory
 + Empty command line
 + Empty get request
 + Unsupported option/argument

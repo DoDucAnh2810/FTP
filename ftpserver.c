@@ -81,6 +81,10 @@ int ftp(int conn_fd, char *target_path) {
         send_message(conn_fd, "Is a directory\n");
         return 1;
     }
+    if (strchr(target_path, '/')) {
+        send_message(conn_fd, "File must be in current working directory\n");
+        return 1;
+    }
 
     send_message(conn_fd, "Successful request\n");
     target_fd = open(target_path, O_RDONLY, 0);
