@@ -207,6 +207,10 @@ int main(int argc, char **argv) {
                 send_message(connfd, buffer);
                 free(cwd);
             } else if (are_equal_strings(cmd_line[0], "cd")) {
+                if (cmd_len < 2) {
+                    send_message(connfd, "Failed to change directory\n");
+                    continue;
+                }
                 if (cd(root_path, cmd_line[1]))
                     send_message(connfd, "Failed to change directory\n");
                 else {
