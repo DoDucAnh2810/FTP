@@ -31,12 +31,12 @@ Server's possible responses:
 + Failed to change directory
 + Unknown command
 ### "get" request's response protocol:
-Successful request (printed in green) \
+Successful request \
 [size of file] \
 [file content] \
 End
 ### Other commands:
-Successful command (not printed) \
+Successful command \
 [command output]
 
 Clusters (slave servers):
