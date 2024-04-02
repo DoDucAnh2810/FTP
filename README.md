@@ -11,11 +11,11 @@ Utilization:
 
 Client's commands:
 ------------------
-**get 'filepath'** : Download the file located at 'filepath' on the server.
-**bye** : Terminate the client.
-**ls** : List the content of the current directory of the server.
-**pwd** : Print the current working directory of the server.
-**cd 'dirpath'** : Change the current working directory to 'dirpath'.
+1. **get 'filepath'** : Download the file located at 'filepath' on the server.
+2. **bye** : Terminate the client.
+3. **ls** : List the content of the current directory of the server.
+4. **pwd** : Print the current working directory of the server.
+5. **cd 'dirpath'** : Change the current working directory to 'dirpath'.
 
 Server's possible responses:
 ----------------------------
@@ -31,12 +31,12 @@ Server's possible responses:
 + Failed to change directory
 + Unknown command
 ### "get" request's response protocol:
-Successful request (printed in green)
-[size of file]
-[file content]
+Successful request (printed in green) \
+[size of file] \
+[file content] \
 End
 ### Other commands:
-Successful command (not printed)
+Successful command (not printed) \
 [command output]
 
 Clusters (slave servers):
