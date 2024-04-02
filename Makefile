@@ -34,14 +34,19 @@ all: $(PROGS)
 	
 clean:
 	scripts/delete_cache.sh
+	@echo "Lauched a client!"
 
 start_server:
 	scripts/launch_server.sh
+	@echo "Master and clusters initialized!"
 
 end_server:
 	scripts/terminate_server.sh
+	@echo "Master and cluster terminated!"
 
 client:
+	@echo "Lauched a client!"
 	scripts/open_client.sh
+	
 
 
