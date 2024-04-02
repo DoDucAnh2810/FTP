@@ -1,0 +1,5 @@
+not_a_command
+cd not_a_directory
+get not_a_file
+get Documents/not_a_cours.pdf
+bye
