@@ -25,6 +25,7 @@ void sigpipe_handler() {
     fflush(stdout);
 }
 
+/* Return the working directory relative to the FTP server */
 char *abstract_cwd(const char *root_path) {
     char raw_cwd[MAXLINE];
     getcwd(raw_cwd, sizeof(raw_cwd));
@@ -34,6 +35,7 @@ char *abstract_cwd(const char *root_path) {
     return result;
 }
 
+/* Change directory WITHIN the FTP server */
 int cd(const char *root_path, const char *path) {
     // Concatenate the allowed directory path with the provided path
     char resolved_path[MAXLINE];
@@ -174,6 +176,7 @@ int main(int argc, char **argv) {
                     continue;
                 }
                 send_message(connfd, "Successful command\n");
+                // Get the result of ls
                 pipe(tube);
                 if ((pid = Fork()) == 0) {
                     Dup2(tube[1], STDOUT_FILENO);
@@ -189,6 +192,7 @@ int main(int argc, char **argv) {
                     send_message(connfd, "ls: Empty directory\n");
                     continue;
                 }
+                // Edit and send the message
                 for (int i = 0; i <= n-2; i++)
                     if (buffer[i] == '\n')
                         buffer[i] = ' ';

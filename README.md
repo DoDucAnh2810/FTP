@@ -1,6 +1,7 @@
 FTP Server
 ==========
 
+
 Utilization:
 ------------
 ### Create a session:
@@ -11,6 +12,7 @@ Utilization:
 1. **make end_server** : Terminate running clusters and master server. (Must be called in the same terminal as "make start_server")
 2. **make clean** : Delete the executables and clear the content of clusters.
 
+
 Client's commands:
 ------------------
 1. **get 'filepath'** : Download the file located at 'filepath' on the server.
@@ -18,6 +20,7 @@ Client's commands:
 3. **ls** : List the content of the current directory of the server.
 4. **pwd** : Print the current working directory of the server.
 5. **cd 'dirpath'** : Change the current working directory to 'dirpath'.
+
 
 Tests:
 ------
@@ -33,6 +36,7 @@ Available .test files:
 + text.test : Downloads all text files (.java) from the directory Text.
 ### Concurrency:
 **./tests/concurrency.sh**
+
 
 Server's possible responses:
 ----------------------------
@@ -55,14 +59,17 @@ Successful command \
 + Failed to change directory
 + Unknown command
 
+
 Clusters (slave servers):
 -------------------------
 There are four clusters located within the "Clusters" directory:
 + Nord
 + East
 + West
-+ South \
++ South
+
 They contain a copy of 'ftpserver' and identical files (after running "make"). They are assigned clients based on a rolling basis by the master server (executable located in the "Master" directory).
+
 
 File structures:
 ----------------
@@ -71,6 +78,7 @@ File structures:
 + Clusters: Contains four clusters as mentionned above.
 + Files: Contains the original files to be distribute to clusters as testing data.
 + Master: Contains the executable 'ftpmaster' and a JSON file tracking the information of the four clusters.
++ tests: Contains test file. Refer to the "Tests" section for usage. 
 + scirpts: Contains shell scripts used by the Makefile.
 ### Modules:
 + cJSON: Helps with parsing JSON files.

@@ -28,10 +28,14 @@ char **split_string_by_whitespace(const char* input_string, int* num_words);
 /* Free an array of string */
 void free_string_array(char** words, int num_words);
 
+/* Parse the JSON file located at filepath
+   Return the list of clusters and put the number of clusters to nb_cluster */
 cluster_t *parse_cluster_list(char *filepath, int *nb_cluster);
 
+/* Strip prefix from string */
 char *strip_prefix(const char *string, const char *prefix);
 
+/* Add prefix to string */
 char* add_prefix(const char* prefix, const char* buffer);
 
 #endif
