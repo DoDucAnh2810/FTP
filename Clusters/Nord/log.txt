@@ -1,3 +1,0 @@
-Server is listening on port 2122
-Server connected to (127.0.0.1)
-Closed connection to (127.0.0.1)
