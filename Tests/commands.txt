@@ -1,0 +1,14 @@
+pwd
+ls
+cd Documents
+pwd
+ls
+cd ..
+cd Pictures
+pwd
+ls
+cd ..
+cd Text
+pwd
+ls
+bye

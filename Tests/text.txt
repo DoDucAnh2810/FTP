@@ -1,0 +1,15 @@
+cd Text
+get Couple.java
+get FAP.java
+get FAPListe.java
+get FAPTableau.java
+get Iterateur.java
+get IterateurListe.java
+get IterateurTableau.java
+get Sequence.java
+get SequenceListe.java
+get SequenceTableau.java
+get TestFap.java
+get TestIterateur.java
+get TestSequence.java
+bye

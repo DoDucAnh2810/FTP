@@ -1,0 +1,7 @@
+cd Pictures
+ls
+get city.png
+get space.png
+get sunset.png
+get tree.jpeg
+bye

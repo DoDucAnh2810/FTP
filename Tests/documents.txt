@@ -1,0 +1,6 @@
+cd Documents
+get cours1.pdf
+get cours2.pdf
+get cours3.pdf
+get cours4.pdf
+bye

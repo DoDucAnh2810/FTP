@@ -3,11 +3,13 @@ FTP Server
 
 Utilization:
 ------------
+### Create a session:
 1. **make** : Create the executables, distribute them to clusters. Intialize the content of clusters.
 2. **make start_server** : Start clusters and master server in the background.
 3. **make client** : Lauch a client from the executable in the "Clients" directory. All files are downloaded to that directory.
-4. **make end_server** : Terminate running clusters and master server. (Must be called in the same terminal as "make start_server")
-5. **make clean** : Delete the executables and clear the content of clusters.
+### After a session:
+1. **make end_server** : Terminate running clusters and master server. (Must be called in the same terminal as "make start_server")
+2. **make clean** : Delete the executables and clear the content of clusters.
 
 Client's commands:
 ------------------

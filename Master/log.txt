@@ -1,0 +1,2 @@
+Master is listening on port 2121
+Assign Cluster Nord connection to (127.0.0.1)
